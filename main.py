@@ -1,6 +1,4 @@
-import os
 import sys
-import argparse
 
 
 def show_help():
@@ -22,9 +20,7 @@ def main():
     command = sys.argv[1]
 
     if command == "chat":
-        # 移除第一个参数(命令)
         sys.argv.pop(1)
-        # 导入并运行聊天窗口
         try:
             from LLM_Chat.chat_window import main as chat_main
 
