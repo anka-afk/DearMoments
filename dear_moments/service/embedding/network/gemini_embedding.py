@@ -1,5 +1,4 @@
 import aiohttp
-import numpy as np
 from ..embedding_service import EmbeddingService
 
 
