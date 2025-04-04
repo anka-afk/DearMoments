@@ -1,3 +1,5 @@
+# 事件框架类, 由llm总结构造
+
 from dataclasses import dataclass
 
 

@@ -29,7 +29,7 @@ class GeminiEmbeddingService(EmbeddingService):
             self.client = aiohttp.ClientSession()
         return self.client
 
-    async def get_embedding_async(self, text: str) -> list:
+    async def get_embedding_async(self, text: str) -> list[float]:
         """
         异步获取文本的嵌入向量
 
