@@ -3,6 +3,5 @@ from dear_moments.service import Services
 
 
 class DearMoments:
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self):
         self.message_processor = MessageProcessor(services=None)

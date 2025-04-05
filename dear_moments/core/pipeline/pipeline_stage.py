@@ -1,6 +1,6 @@
 import asyncio
-import logging
 from typing import Any, Callable, Dict, List, Optional, TypeVar
+from dear_moments.app_context import AppContext
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -31,7 +31,7 @@ class PipelineStage:
         self.output_queue = None  # 将在pipeline中设置
         self.workers = workers
         self.worker_tasks = []
-        self.logger = logging.getLogger(f"pipeline.{name}")
+        self.logger = AppContext.get_instance().get("logger")
 
     async def worker(self):
         """阶段工作者，不断从输入队列获取数据并处理"""

@@ -1,0 +1,22 @@
+{
+  "services": {
+    "llm": {
+      "type": "gemini",
+      "api_key": "",
+      "model": "gemini-2.0-flash",
+      "timeout": 30
+    },
+    "embedding": {
+      "type": "gemini",
+      "api_key": "",
+      "model": "gemini-embedding-exp-03-07",
+      "timeout": 30
+    }
+  },
+  "app": {
+    "language": "zh-CN",
+    "log_level": "INFO",
+    "max_queue_size": 100,
+    "workers": 2
+  }
+}

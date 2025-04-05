@@ -1,7 +1,7 @@
 import asyncio
-import logging
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 from .pipeline_stage import PipelineStage
+from dear_moments.app_context import AppContext
 
 
 class Pipeline:
@@ -9,7 +9,7 @@ class Pipeline:
 
     def __init__(self):
         self.stages: List[PipelineStage] = []
-        self.logger = logging.getLogger("pipeline")
+        self.logger = AppContext.get_instance().get("logger")
 
     def add_stage(self, stage: PipelineStage) -> "Pipeline":
         """添加处理阶段到流水线"""
