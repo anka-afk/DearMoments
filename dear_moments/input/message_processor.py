@@ -1,4 +1,5 @@
 from dear_moments.service import Services
+import json
 
 
 class MessageProcessor:
@@ -36,3 +37,46 @@ class MessageProcessor:
         # 调用LLM进行事件框架提取
         llm_service = self.services.llm_service
         response = await Services.llm_service.get_response(prompt)
+        return response
+
+    async def validate_event_frame(self, response: str) -> dict:
+        """验证LLM返回的事件框架是否符合预期格式
+
+        Args:
+            response (str): LLM返回的响应
+
+        Returns:
+            dict: 验证后的事件框架字典，如果验证失败则返回空字典
+        """
+
+        try:
+            # 尝试解析JSON
+            event_frame = json.loads(response)
+
+            # 验证必要字段
+            required_fields = [
+                "type",
+                "participants",
+                "time",
+                "location",
+                "cause",
+                "result",
+                "manner",
+            ]
+            for field in required_fields:
+                if field not in event_frame:
+                    print(f"事件框架缺少必要字段: {field}")
+                    return {}
+
+            # 验证participants字段是否为字典类型
+            if not isinstance(event_frame["participants"], dict):
+                print("participants字段格式错误，应为字典类型")
+                return {}
+
+            return event_frame
+        except json.JSONDecodeError:
+            print("无法解析LLM返回的JSON格式")
+            return {}
+        except Exception as e:
+            print(f"验证事件框架时发生错误: {str(e)}")
+            return {}
