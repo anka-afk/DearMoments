@@ -1,4 +1,6 @@
 from dear_moments.service import Services
+from dear_moments.app_context import AppContext
+from dear_moments.service import Services
 import json
 
 
@@ -9,8 +11,9 @@ class MessageProcessor:
 
     services: Services
 
-    def __init__(self, services: Services):
-        self.services = services
+    def __init__(self):
+        self.services = Services.get_instance()
+        self.logger = AppContext.get_instance().get("logger")
 
     async def message_to_event_frame(self, event_text: str):
         """利用LLm提取事件框架
@@ -37,7 +40,18 @@ class MessageProcessor:
         # 调用LLM进行事件框架提取
         llm_service = self.services.llm_service
         response = await Services.llm_service.get_response(prompt)
-        return response
+        # 检验返回的事件框架是否符合预期格式
+        event_frame = await self.validate_event_frame(response)
+        if not event_frame:
+            self.logger.error("返回的事件框架格式不正确, 进行重试")
+            # 进行重试
+            response = await Services.llm_service.get_response(prompt)
+            event_frame = await self.validate_event_frame(response)
+            if not event_frame:
+                self.logger.error("重试后返回的事件框架格式仍不正确")
+                return None
+
+        return event_frame
 
     async def validate_event_frame(self, response: str) -> dict:
         """验证LLM返回的事件框架是否符合预期格式

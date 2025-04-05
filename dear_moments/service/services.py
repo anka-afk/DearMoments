@@ -1,6 +1,7 @@
 from dear_moments.service.embedding import EmbeddingService, EmbeddingServiceFactory
 from dear_moments.service.llm import LLMService, LLMServiceFactory
 from typing import Dict, Type, TypeVar, Any
+from dear_moments import DearMomentsConfig
 
 T = TypeVar("T")
 
@@ -19,28 +20,32 @@ class Services:
             cls._instance = super(Services, cls).__new__(cls)
         return cls._instance
 
-    def __init__(
-        self, embedding_service_type: str = "gemini", llm_service_type: str = "gemini"
-    ):
+    def __init__(self):
         if Services._initialized:
             return
         self._services: Dict[str, Any] = {}
 
-        self._init_all_services(embedding_service_type, llm_service_type)
+        self._init_all_services()
 
         Services._initialized = True
 
-    def _init_all_services(
-        self, embedding_service_type: str, llm_service_type: str
-    ) -> None:
+    def _init_all_services(self) -> None:
         """初始化所有服务"""
+        config = DearMomentsConfig.get_instance()
+
         # 初始化嵌入服务
+        embedding_config = config.get("services.embedding")
+        if not embedding_config:
+            raise ValueError("嵌入服务配置缺失")
         self.register_service(
-            EmbeddingService, EmbeddingServiceFactory.create(embedding_service_type)
+            EmbeddingService, EmbeddingServiceFactory.create(**embedding_config)
         )
 
         # 初始化LLM服务
-        self.register_service(LLMService, LLMServiceFactory.create(llm_service_type))
+        llm_config = config.get("services.llm")
+        if not llm_config:
+            raise ValueError("LLM服务配置缺失")
+        self.register_service(LLMService, LLMServiceFactory.create(**llm_config))
 
     @classmethod
     def get_instance(cls) -> "Services":
