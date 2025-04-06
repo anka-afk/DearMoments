@@ -9,10 +9,7 @@ class MessageProcessor:
     消息处理器, 接收到消息后, 先进行处理
     """
 
-    services: Services
-
     def __init__(self):
-        self.services = Services.get_instance()
         self.logger = AppContext.get_instance().get("logger")
 
     async def message_to_event_frame(self, event_text: str):
@@ -38,19 +35,17 @@ class MessageProcessor:
         """
 
         # 调用LLM进行事件框架提取
-        llm_service = self.services.llm_service
-        response = await Services.llm_service.get_response(prompt)
+        response = await Services.llm_service().get_response(prompt)
         # 检验返回的事件框架是否符合预期格式
         event_frame = await self.validate_event_frame(response)
         if not event_frame:
             self.logger.error("返回的事件框架格式不正确, 进行重试")
             # 进行重试
-            response = await Services.llm_service.get_response(prompt)
+            response = await Services.llm_service().get_response(prompt)
             event_frame = await self.validate_event_frame(response)
             if not event_frame:
                 self.logger.error("重试后返回的事件框架格式仍不正确")
                 return None
-
         return event_frame
 
     async def validate_event_frame(self, response: str) -> dict:
