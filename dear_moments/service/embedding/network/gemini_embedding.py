@@ -1,5 +1,6 @@
 import aiohttp
 from ..embedding_service import EmbeddingService
+import numpy as np
 
 
 class GeminiEmbeddingService(EmbeddingService):
@@ -29,7 +30,7 @@ class GeminiEmbeddingService(EmbeddingService):
             self.client = aiohttp.ClientSession()
         return self.client
 
-    async def get_embedding(self, text: str) -> list[float]:
+    async def get_embedding(self, text: str) -> np.ndarray:
         """
         获取文本的嵌入向量
 
@@ -37,7 +38,7 @@ class GeminiEmbeddingService(EmbeddingService):
             text (str): 输入文本
 
         Returns:
-            list: 嵌入向量
+            np.ndarray: 嵌入向量
         """
         client = self._ensure_client()
         headers = {"Content-Type": "application/json"}
@@ -52,7 +53,8 @@ class GeminiEmbeddingService(EmbeddingService):
             if response.status == 200:
                 result = await response.json()
                 if "embedding" in result and "values" in result["embedding"]:
-                    return result["embedding"]["values"]
+                    # 性能考虑, float32类型的numpy数组比list更快
+                    return np.array(result["embedding"]["values"], dtype=np.float32)
                 else:
                     raise ValueError(f"API返回格式异常: {result}")
             else:

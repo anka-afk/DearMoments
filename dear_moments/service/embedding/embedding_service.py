@@ -1,6 +1,7 @@
 # 获得文本嵌入服务的抽象基类, 定义了文本嵌入服务的基本接口
 
 from abc import ABC, abstractmethod
+import numpy as np
 
 
 class EmbeddingService(ABC):
@@ -15,7 +16,7 @@ class EmbeddingService(ABC):
         pass
 
     @abstractmethod
-    async def get_embedding(self, text: str) -> list:
+    async def get_embedding(self, text: str) -> np.ndarray:
         """
         获取文本的嵌入向量
 
@@ -23,7 +24,7 @@ class EmbeddingService(ABC):
             text (str): 输入文本
 
         Returns:
-            list: 嵌入向量
+            np.ndarray: 嵌入向量
         """
         pass
 
