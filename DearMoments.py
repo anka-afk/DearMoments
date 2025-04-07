@@ -85,23 +85,16 @@ class DearMoments:
 
 if __name__ == "__main__":
     import asyncio
+    import platform
 
     async def main():
         dear_moments = await DearMoments().initialize()
 
-        # 设置信号处理
-        loop = asyncio.get_running_loop()
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler(
-                sig, lambda: asyncio.create_task(dear_moments.shutdown())
-            )
-
-        # 提交一个查询
-        # result = await dear_moments.query("你好")
-        # print(f"查询结果: {result}")
-
         try:
+            print("DearMoments服务已启动，按Ctrl+C停止服务...")
             await dear_moments.run_forever()
+        except KeyboardInterrupt:
+            print("\n检测到键盘中断，正在关闭服务...")
         finally:
             await dear_moments.shutdown()
 
