@@ -13,7 +13,9 @@ class StoragePipeline(BasePipeline):
         self, max_queue_size: int = 100, workers: int = 2
     ):
         """创建消息处理阶段"""
-        from dear_moments.storage_processors.message_processor import MessageProcessor
+        from dear_moments.core.storage_processors.message_processor import (
+            MessageProcessor,
+        )
 
         async def process_message(message: Any):
             processor = MessageProcessor()

@@ -22,7 +22,7 @@ class GeminiLLMService(LLMService):
             self.client = aiohttp.ClientSession()
         return self.client
 
-    async def get_response_async(self, prompt: str) -> str:
+    async def get_response(self, prompt: str) -> str:
         """
         异步获取llm的回复
 
@@ -71,3 +71,9 @@ class GeminiLLMService(LLMService):
                 return response_text
 
             raise Exception(f"无法从Gemini响应中提取文本: {response_data}")
+
+    def close(self):
+        """关闭HTTP客户端"""
+        if self.client:
+            self.client.close()
+            self.client = None

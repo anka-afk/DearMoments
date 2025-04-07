@@ -8,7 +8,7 @@ class EmbeddingServiceFactory:
     """
 
     @staticmethod
-    def create(service_type: str, **kwargs) -> EmbeddingService:
+    def create(type: str, **kwargs) -> EmbeddingService:
         """
         创建嵌入服务实例
 
@@ -19,7 +19,7 @@ class EmbeddingServiceFactory:
         Returns:
             EmbeddingService: 嵌入服务实例
         """
-        if service_type == "gemini":
+        if type == "gemini":
             api_key = kwargs.get("api_key")
             if not api_key:
                 raise ValueError("使用Gemini嵌入服务需要提供api_key")
@@ -27,9 +27,9 @@ class EmbeddingServiceFactory:
             timeout = kwargs.get("timeout", 30)
             return GeminiEmbeddingService(api_key, model, timeout)
 
-        # elif service_type == "local-st":
+        # elif type == "local-st":
         #     model_name = kwargs.get("model_name", "all-MiniLM-L6-v2")
         #     return SentenceTransformersEmbedding(model_name)
 
         else:
-            raise ValueError(f"不支持的嵌入服务类型: {service_type}")
+            raise ValueError(f"不支持的嵌入服务类型: {type}")

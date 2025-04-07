@@ -18,11 +18,18 @@ class LLMService(ABC):
         pass
 
     @abstractmethod
-    def get_response(self, prompt: str) -> str:
+    async def get_response(self, prompt: str) -> str:
         """
         获取LLM服务的响应
 
         :param prompt: 输入的提示文本
         :return: LLM服务的响应文本
+        """
+        pass
+
+    @abstractmethod
+    def close(self):
+        """
+        关闭LLM服务，释放资源
         """
         pass

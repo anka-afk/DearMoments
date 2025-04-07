@@ -29,9 +29,9 @@ class GeminiEmbeddingService(EmbeddingService):
             self.client = aiohttp.ClientSession()
         return self.client
 
-    async def get_embedding_async(self, text: str) -> list[float]:
+    async def get_embedding(self, text: str) -> list[float]:
         """
-        异步获取文本的嵌入向量
+        获取文本的嵌入向量
 
         Args:
             text (str): 输入文本
@@ -58,26 +58,6 @@ class GeminiEmbeddingService(EmbeddingService):
             else:
                 error_text = await response.text()
                 raise Exception(f"API请求失败: {response.status} - {error_text}")
-
-    def get_embedding(self, text: str) -> list:
-        """
-        同步获取文本的嵌入向量
-
-        Args:
-            text (str): 输入文本
-
-        Returns:
-            list: 嵌入向量
-        """
-        import asyncio
-
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-
-        return loop.run_until_complete(self.get_embedding_async(text))
 
     async def close(self):
         """关闭HTTP客户端"""

@@ -15,7 +15,7 @@ class EmbeddingService(ABC):
         pass
 
     @abstractmethod
-    def get_embedding(self, text: str) -> list:
+    async def get_embedding(self, text: str) -> list:
         """
         获取文本的嵌入向量
 
@@ -24,5 +24,11 @@ class EmbeddingService(ABC):
 
         Returns:
             list: 嵌入向量
+        """
+        pass
+
+    def close(self):
+        """
+        关闭嵌入服务，释放资源
         """
         pass

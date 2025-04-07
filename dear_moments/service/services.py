@@ -87,3 +87,10 @@ class Services:
     def service(cls, service_type: Type[T]) -> T:
         """通过类名直接访问指定类型的服务"""
         return cls.get_instance().get_service(service_type)
+
+    @classmethod
+    def close(cls) -> None:
+        """关闭所有服务"""
+        for service in cls.get_instance()._services.values():
+            if hasattr(service, "close"):
+                service.close()
