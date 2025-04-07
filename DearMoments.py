@@ -1,4 +1,4 @@
-from dear_moments.input import MessageProcessor
+from dear_moments.storage_processors import MessageProcessor
 from dear_moments.service import Services
 from dear_moments import DearMomentsConfig
 

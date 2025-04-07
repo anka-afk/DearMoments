@@ -32,6 +32,9 @@ class PipelineStage:
         self.workers = workers
         self.worker_tasks = []
         self.logger = AppContext.get_instance().get("logger")
+        # 添加统计计数器
+        self.processed_items = 0
+        self.failed_items = 0
 
     async def worker(self):
         """阶段工作者，不断从输入队列获取数据并处理"""
@@ -49,9 +52,11 @@ class PipelineStage:
                 self.logger.debug(f"Processing item in stage {self.name}")
                 try:
                     result = await self.process_func(item)
+                    self.processed_items += 1
                     if result is not None and self.output_queue is not None:
                         await self.output_queue.put(result)
                 except Exception as e:
+                    self.failed_items += 1
                     self.logger.error(
                         f"Error processing item in stage {self.name}: {e}"
                     )
