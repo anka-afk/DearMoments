@@ -72,7 +72,7 @@ class GeminiLLMService(LLMService):
 
             raise Exception(f"无法从Gemini响应中提取文本: {response_data}")
 
-    def close(self):
+    async def close(self):
         """关闭HTTP客户端"""
         if self.client:
             self.client.close()

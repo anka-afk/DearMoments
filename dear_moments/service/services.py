@@ -93,4 +93,4 @@ class Services:
         """关闭所有服务"""
         for service in cls.get_instance()._services.values():
             if hasattr(service, "close"):
-                service.close()
+                await service.close()
