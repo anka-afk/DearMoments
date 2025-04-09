@@ -1,0 +1,7 @@
+class LongTermMemory:
+    """
+    长期记忆的数据模型
+    """
+
+    def __init__(self):
+        pass
