@@ -28,7 +28,7 @@ class EmbeddingService(ABC):
         """
         pass
 
-    def close(self):
+    async def close(self):
         """
         关闭嵌入服务，释放资源
         """

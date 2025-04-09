@@ -46,6 +46,8 @@ class MessageProcessor:
             if not event_frame:
                 self.logger.error("重试后返回的事件框架格式仍不正确")
                 return None
+        # 测试输出
+        self.logger.info(f"提取的事件框架: {event_frame}")
         return event_frame
 
     async def validate_event_frame(self, response: str) -> dict:
@@ -84,7 +86,7 @@ class MessageProcessor:
 
             return event_frame
         except json.JSONDecodeError:
-            print("无法解析LLM返回的JSON格式")
+            print(f"无法解析LLM返回的JSON格式 {response}")
             return {}
         except Exception as e:
             print(f"验证事件框架时发生错误: {str(e)}")

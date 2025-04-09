@@ -90,6 +90,8 @@ if __name__ == "__main__":
 
     async def main():
         dear_moments = await DearMoments().initialize()
+        # 测试放入一个消息
+        await dear_moments.store_message("测试消息")
 
         # 信号处理器
         loop = asyncio.get_event_loop()

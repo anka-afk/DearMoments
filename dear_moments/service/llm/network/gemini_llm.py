@@ -75,5 +75,5 @@ class GeminiLLMService(LLMService):
     async def close(self):
         """关闭HTTP客户端"""
         if self.client:
-            self.client.close()
+            await self.client.close()
             self.client = None

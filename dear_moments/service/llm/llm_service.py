@@ -28,7 +28,7 @@ class LLMService(ABC):
         pass
 
     @abstractmethod
-    def close(self):
+    async def close(self):
         """
         关闭LLM服务，释放资源
         """
