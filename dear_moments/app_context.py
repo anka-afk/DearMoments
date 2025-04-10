@@ -1,5 +1,6 @@
 from typing import Dict, Any
 import logging
+import json
 
 
 class AppContext:
@@ -42,8 +43,10 @@ class AppContext:
         log_level = config.get("app.log_level", "INFO")
         logger.setLevel(getattr(logging, log_level))
 
-        # 注册共享对象
+        # 注册共享logger
         self.register("logger", logger)
+
+        # 初始化prompt资源
 
     def set_logger(self, logger: logging.Logger) -> None:
         """

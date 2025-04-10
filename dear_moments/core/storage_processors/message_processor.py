@@ -1,6 +1,8 @@
 from dear_moments.service import Services
 from dear_moments.app_context import AppContext
 from dear_moments.service import Services
+from dear_moments.models import Message, SystemPrompt
+from dear_moments.resources import StoragePrompts
 import json
 
 
@@ -12,27 +14,22 @@ class MessageProcessor:
     def __init__(self):
         self.logger = AppContext.get_instance().get("logger")
 
-    async def message_to_event_frame(self, event_text: str):
+    async def message_to_event_frame(self, message: Message):
         """利用LLm提取事件框架
 
         Args:
-            event_text (str): 事件文本
+            message (Message): 消息对象
         """
-        prompt = f"""
-        请从以下文本中提取事件信息，并以JSON格式返回：
-        {event_text}
+        system_prompt = SystemPrompt.get(message.memory_id)
+        # 构造conversations
 
-        提取为以下格式:
-        {{
-        "type": "事件类型",
-        "participants": {{"role1": "entity1", "role2": "entity2"}},
-        "time": "时间信息",
-        "location": "地点信息",
-        "cause": "事件原因",
-        "result": "事件结果",
-        "manner": "事件方式"
-        }}
-        """
+        prompt = StoragePrompts.get_information_extract_prompt(
+            system_prompt=system_prompt,
+            examples="",
+            conversations="",
+            topic_examples="",
+            tab=" ",
+        )
 
         # 调用LLM进行事件框架提取
         response = await Services.llm_service().get_response(prompt)
