@@ -1,7 +1,7 @@
 from dear_moments.service import Services
 from dear_moments.app_context import AppContext
 from dear_moments.service import Services
-from dear_moments.models import Message, SystemPrompt
+from dear_moments.models import Message, SystemPrompt, ContextList, Context
 from dear_moments.resources import StoragePrompts
 import json
 
@@ -20,18 +20,26 @@ class MessageProcessor:
         Args:
             message (Message): 消息对象
         """
+
+        # ===================================================
+        #                     Prompt构建
+        # ===================================================
         system_prompt = SystemPrompt.get(message.memory_id)
-        # 构造conversations
+
+        # 获取上下文
+        context = ContextList.get_by_memory_id(message.memory_id)
 
         prompt = StoragePrompts.get_information_extract_prompt(
             system_prompt=system_prompt,
             examples="",
-            conversations="",
+            conversations=context.to_str(),
             topic_examples="",
             tab=" ",
         )
 
-        # 调用LLM进行事件框架提取
+        # ====================================================
+        #               调用LLM进行事件框架提取
+        # ====================================================
         response = await Services.llm_service().get_response(prompt)
         # 检验返回的事件框架是否符合预期格式
         event_frame = await self.validate_event_frame(response)
@@ -88,3 +96,15 @@ class MessageProcessor:
         except Exception as e:
             print(f"验证事件框架时发生错误: {str(e)}")
             return {}
+
+    async def save_to_context(self, message: Message):
+        memory_id = message.memory_id
+        # 获取上下文对象
+        context = ContextList.get_by_memory_id(memory_id)
+        if context is None:
+            # 如果上下文不存在, 则创建一个新的上下文
+            context = Context(memory_id=memory_id, context=[])
+            ContextList.add(context)
+
+        # 将消息添加到上下文中
+        context.add(message)

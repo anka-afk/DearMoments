@@ -32,7 +32,6 @@ class PipelineStage:
         self.workers = workers
         self.worker_tasks = []
         self.logger = AppContext.get_instance().get("logger")
-        # 添加统计计数器
         self.processed_items = 0
         self.failed_items = 0
 

@@ -19,6 +19,7 @@ class StoragePipeline(BasePipeline):
 
         async def process_message(message: Any):
             processor = MessageProcessor()
+            await processor.save_to_context(message)
             event_frame = await processor.message_to_event_frame(message)
             return event_frame
 
