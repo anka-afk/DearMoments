@@ -24,7 +24,7 @@ class MessageProcessor:
         # ===================================================
         #                     Prompt构建
         # ===================================================
-        system_prompt = SystemPrompt.get(message.memory_id)
+        system_prompt = SystemPrompt.get_instance().get(message.memory_id)
 
         # 获取上下文
         context = ContextList.get_by_memory_id(message.memory_id)
@@ -44,7 +44,9 @@ class MessageProcessor:
         # 检验返回的事件框架是否符合预期格式
         event_frame = await self.validate_event_frame(response)
         if not event_frame:
-            self.logger.error("返回的事件框架格式不正确, 进行重试")
+            self.logger.error(
+                "返回的事件框架格式不正确, 进行重试, 返回的事件框架: %s", response
+            )
             # 进行重试
             response = await Services.llm_service().get_response(prompt)
             event_frame = await self.validate_event_frame(response)

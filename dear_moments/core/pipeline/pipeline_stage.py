@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from typing import Any, Callable, Dict, List, Optional, TypeVar
 from dear_moments.app_context import AppContext
 
@@ -37,18 +38,16 @@ class PipelineStage:
 
     async def worker(self):
         """阶段工作者，不断从输入队列获取数据并处理"""
-        self.logger.info(f"Starting worker for stage {self.name}")
+        self.logger.info(f"启动阶段 {self.name}")
         while True:
             try:
                 item = await self.input_queue.get()
                 if item is None:  # 结束信号
-                    self.logger.info(
-                        f"Worker for stage {self.name} received stop signal"
-                    )
+                    self.logger.info(f"工作阶段 {self.name} 收到停止信号")
                     self.input_queue.task_done()
                     break
 
-                self.logger.debug(f"Processing item in stage {self.name}")
+                self.logger.debug(f"处理阶段 {self.name}")
                 try:
                     result = await self.process_func(item)
                     self.processed_items += 1
@@ -56,18 +55,16 @@ class PipelineStage:
                         await self.output_queue.put(result)
                 except Exception as e:
                     self.failed_items += 1
-                    self.logger.error(
-                        f"Error processing item in stage {self.name}: {e}"
-                    )
-
-                self.input_queue.task_done()
+                    error_msg = f"在处理阶段遇到错误 {self.name}: {str(e)}"
+                    stack_trace = traceback.format_exc()
+                    self.logger.error(f"{error_msg}\n{stack_trace}")
+                finally:
+                    self.input_queue.task_done()
             except asyncio.CancelledError:
-                self.logger.info(f"Worker for stage {self.name} cancelled")
+                self.logger.info(f"工作阶段 {self.name} 被取消")
                 break
             except Exception as e:
-                self.logger.error(
-                    f"Unexpected error in worker for stage {self.name}: {e}"
-                )
+                self.logger.error(f"在处理阶段遇到错误 {self.name}: {e}")
 
     async def start(self):
         """启动所有工作者"""

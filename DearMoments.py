@@ -1,6 +1,7 @@
 from dear_moments.service import Services
 from dear_moments import DearMomentsConfig
 from dear_moments.core.pipeline import StoragePipeline, QueryPipeline
+from dear_moments.models import Message, Context, ContextList, SystemPrompt
 import asyncio
 import signal
 
@@ -90,8 +91,23 @@ if __name__ == "__main__":
 
     async def main():
         dear_moments = await DearMoments().initialize()
+
+        context = Context(memory_id="123456", context=[])
+
+        SystemPrompt.get_instance().set(
+            memory_id="123456",
+            system_prompt="你是一个智能助手，帮助用户处理信息。",
+        )
+
         # 测试放入一个消息
-        await dear_moments.store_message("测试消息")
+        message = Message(
+            id="test",
+            memory_id="123456",
+            content="测试消息",
+            sender="test",
+            context=context,
+        )
+        await dear_moments.store_message(message)
 
         # 信号处理器
         loop = asyncio.get_event_loop()
